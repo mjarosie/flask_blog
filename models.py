@@ -1,8 +1,15 @@
 import datetime, re
 from app import db
 
+
 def slugify(s):
     return re.sub('[^\w]+', '-', s).lower()
+
+
+entry_tags = db.Table('entry_tags',
+                      db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+                      db.Column('entry_id', db.Integer, db.ForeignKey('entry.id'))
+                      )
 
 
 class Entry(db.Model):
@@ -12,6 +19,7 @@ class Entry(db.Model):
     body = db.Column(db.Text)
     created_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
     modified_timestamp = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+    tags = db.relationship('Tag', secondary=entry_tags, backref=db.backref('entries', lazy='dynamic'))
 
     def __init__(self, *args, **kwargs):
         super(Entry, self).__init__(*args, **kwargs)  # Call parent constructor.
