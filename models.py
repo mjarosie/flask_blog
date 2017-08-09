@@ -16,7 +16,7 @@ class Entry(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(Entry, self).__init__(*args, **kwargs)  # Call parent constructor.
-        self.generage_slug()
+        self.generate_slug()
 
     def generate_slug(self):
         self.slug = ''
