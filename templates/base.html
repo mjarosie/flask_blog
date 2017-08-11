@@ -30,6 +30,7 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('homepage') }}">Home</a></li>
                     <li><a href="{{ url_for('entries.index') }}">Blog</a></li>
+                    <li><a href="{{ url_for('entries.tag_index') }}">Tags</a></li>
                     {% block extra_nav %} {% endblock %}
                 </ul>
             </div>
