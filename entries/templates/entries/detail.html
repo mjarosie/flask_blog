@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+<!--
+parameters:
+    entry: Entry to be displayed.
+-->
+
+{% block title %} {{ entry.title }} {% endblock %}
+
+{% block content_title %} {{ entry.title }} {% endblock %}
+
+{% block sidebar %}
+    <ul class="well nav nav-list">
+        <li><h4>Tags</h4></li>
+        {% for tag in entry.tags %}
+            <li><a href="{{ url_for('entries.tag_detail', slug=tag.slug) }}">{{ tag.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+<p>Published {{entry.created_timestamp.strftime('%d/%m/%Y') }}</p>
+
+{% endblock %}
+
+{% block content %}
+{{ entry.body }}
+{% endblock %}
+
