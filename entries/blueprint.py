@@ -1,10 +1,13 @@
 from flask import Blueprint
+from helpers import object_list
+from models import Entry
 
 entries = Blueprint('entries', __name__, template_folder='templates')
 
 @entries.route('/')
 def index():
-    return 'Entries index'
+    entries = Entry.query.order_by(Entry.created_timestamp.desc())
+    return object_list('entries/index.html', entries)
 
 @entries.route('/tags/')
 def tag_index():
