@@ -1,0 +1,39 @@
+<!--
+Template that shows the list of pages of the displayed list of objects.
+
+Template attributes:
+    object_list: attribute which holds a reference to a paginated query result of objects to be displayed.
+-->
+
+<ul class="pagination">
+    <!-- Left arrow as a link to the previous page (if there is no previous page, disable the arrow) -->
+    <li {% if not object_list.has_prev %} class="disabled" {% endif %} >
+        {% if object_list.has_prev %}
+            <a href="./?page={{ object_list.prev_num }}">&laquo;</a>
+        {% else %}
+            <a>&laquo;</a>
+        {% endif %}
+    </li>
+
+    <!-- Display the list of pages as links. -->
+    {% for page in object_list.iter_pages() %}
+    <li>
+        {% if page %}
+            <a
+                    {% if page == object_list.page %} class="active" {% endif %}
+                    href="./?page={{ page }}"
+            >{{ page }}</a>
+        {% else %}
+            <a class="disabled">...</a>
+        {% endif %}
+    </li>
+    {% endfor %}
+    <!-- Right arrow as a link to the next page (if there is no next page, disable the arrow) -->
+    <li {% if not object_list.has_next %} class="disabled" {% endif %} >
+        {% if object_list.has_next %}
+            <a href="./?page={{ object_list.next_num }}">&raquo;</a>
+        {% else %}
+            <a>&raquo;</a>
+        {% endif %}
+    </li>
+</ul>
