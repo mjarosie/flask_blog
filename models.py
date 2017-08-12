@@ -3,6 +3,7 @@ from app import db
 
 
 def slugify(s):
+    """Helper function which uses a regular expression to generate a string that can be used as URL."""
     return re.sub('[^\w]+', '-', s).lower()
 
 
@@ -13,6 +14,11 @@ entry_tags = db.Table('entry_tags',
 
 
 class Entry(db.Model):
+    """Model of blog entry. It can be saved as a draft or published.
+    It does have a title, body, time of creation and publication.
+    It can be tagged."""
+
+
     STATUS_PUBLIC = 0
     STATUS_DRAFT = 1
 
@@ -39,6 +45,7 @@ class Entry(db.Model):
 
 
 class Tag(db.Model):
+    """Model of a tag with which the entries can be connected."""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     slug = db.Column(db.String(64), unique=True)
