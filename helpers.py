@@ -3,6 +3,7 @@ from flask import render_template, request
 
 def object_list(template_name, query, paginate_by=2, **context):
     """List the objects from query in given template, paginate by given number of entries.
+    Shows the first page by default.
 
     :param template_name: Template for the query to be listed in.
     :param query: Items to be displayed.
