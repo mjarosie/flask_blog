@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, redirect, render_template, request, url_for
 from helpers import object_list
 from models import Entry, Tag
+from entries.forms import EntryForm
 
 entries = Blueprint('entries', __name__, template_folder='templates')
 
@@ -8,7 +9,7 @@ entries = Blueprint('entries', __name__, template_folder='templates')
 @entries.route('/')
 def index():
     """List all blog entries ordered by date of creation."""
-    entries = Entry.query.order_by(Entry.created_timestamp.desc())
+    entries = Entry.query.filter(Entry.status == Entry.STATUS_PUBLIC).order_by(Entry.created_timestamp.desc())
     return entry_list('entries/index.html', entries)
 
 
@@ -27,6 +28,21 @@ def tag_detail(slug):
     return entry_list('entries/tag_detail.html', entries, tag=tag)
 
 
+@entries.route('/create/', methods=['GET', 'POST'])
+def create():
+    if request.method == 'POST':
+        form = EntryForm(request.form)
+        if form.validate():
+            from app import db
+            entry = form.save_entry(Entry())
+            db.session.add(entry)
+            db.session.commit()
+            return redirect(url_for('entries.detail', slug=entry.slug))
+    else:  # If GET request received.
+        form = EntryForm()
+    return render_template('entries/create.html', form=form)
+
+
 @entries.route('/<slug>/')
 def detail(slug):
     """Show the given entry."""
@@ -40,5 +56,6 @@ def entry_list(template, query, **context):
     """Filter a given query by 'q' parameter and insert it into given template."""
     search = request.args.get('q')
     if search:
-        query = query.filter(Entry.status == Entry.STATUS_PUBLIC & ((Entry.body.contains(search)) | (Entry.title.contains(search))))
+        query = query.filter(
+            Entry.status == (Entry.body.contains(search)) | (Entry.title.contains(search)))
     return object_list(template, query, **context)
