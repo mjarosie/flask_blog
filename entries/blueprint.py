@@ -31,6 +31,8 @@ def tag_detail(slug):
 def detail(slug):
     """Show the given entry."""
     entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+    # print(entry.tags.order_by(Tag.name.desc()).all())
+    # entry.tags = entry.tags.order_by(Tag.name.desc()).all()
     return render_template('entries/detail.html', entry=entry)
 
 
@@ -38,5 +40,5 @@ def entry_list(template, query, **context):
     """Filter a given query by 'q' parameter and insert it into given template."""
     search = request.args.get('q')
     if search:
-        query = query.filter((Entry.body.contains(search)) | (Entry.title.contains(search)))
+        query = query.filter(Entry.status == Entry.STATUS_PUBLIC & ((Entry.body.contains(search)) | (Entry.title.contains(search))))
     return object_list(template, query, **context)

@@ -18,7 +18,6 @@ class Entry(db.Model):
     It does have a title, body, time of creation and publication.
     It can be tagged."""
 
-
     STATUS_PUBLIC = 0
     STATUS_DRAFT = 1
 
@@ -29,7 +28,7 @@ class Entry(db.Model):
     status = db.Column(db.SmallInteger, default=STATUS_PUBLIC)
     created_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
     modified_timestamp = db.Column(db.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-    tags = db.relationship('Tag', secondary=entry_tags, backref=db.backref('entries', lazy='dynamic'))
+    tags = db.relationship('Tag', secondary=entry_tags, lazy='dynamic', backref=db.backref('entries', lazy='dynamic'))
 
     def __init__(self, *args, **kwargs):
         super(Entry, self).__init__(*args, **kwargs)  # Call parent constructor.

@@ -4,16 +4,6 @@
 
 {% block content %}
     <p>Hello, {{ name|default('anonymous', True) }}.</p>
-    {% if number %}
-        <p>Your number is {{ number|int }} </p>
-        <ul>
-            {% for i in range(number|int) %}
-                {% if i is divisibleby 2 %}
-                    <li> {{ i }} </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No number specified.</p>
-    {% endif %}
+    <div class="col-md-1"></div>
+    <div class="col-md-4">This is the test blog application developed in order to learn using Flask python microframework.</div>
 {% endblock %}
