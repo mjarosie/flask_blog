@@ -1,11 +1,13 @@
 import wtforms
+from wtforms.validators import DataRequired
+
 from models import Entry
 
 
 class EntryForm(wtforms.Form):
-    """Form used to create new blog entries."""
-    title = wtforms.StringField('Title')
-    body = wtforms.TextAreaField('Body')
+    """Form used to create new blog entries. Both title and body are required."""
+    title = wtforms.StringField('Title', validators=[DataRequired()])
+    body = wtforms.TextAreaField('Body', validators=[DataRequired()])
     status = wtforms.SelectField(
         'Entry status',
         choices=(

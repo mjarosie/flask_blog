@@ -8,10 +8,16 @@
     <form action="{{ url_for('entries.create') }}" class="form form-horizontal" method="post">
         <!-- Show label and entry field for each field of form. -->
         {% for field in form %}
-            <div class="form-group">
+            <div class="form-group {% if field.errors %} has-error has-feedback {% endif %}">
                 {{ field.label(class='col-sm-3 control-label') }}
                 <div class="col-sm-9">
                     {{ field(class='form-control') }}
+                    {% if field.errors %}
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <span class="help-block">{{ error }} </span>
+                    {% endfor %}
                 </div>
             </div>
         {% endfor %}
