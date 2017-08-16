@@ -1,6 +1,12 @@
 # Databases
 *.db
 
+# Image files
+*.png
+*.jpg
+*.gif
+*.tiff
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
