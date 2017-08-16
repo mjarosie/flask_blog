@@ -10,7 +10,7 @@ entries = Blueprint('entries', __name__, template_folder='templates')
 @entries.route('/')
 def index():
     """List all blog entries ordered by date of creation."""
-    entries = Entry.query.filter(Entry.status == Entry.STATUS_PUBLIC).order_by(Entry.created_timestamp.desc())
+    entries = Entry.query.order_by(Entry.created_timestamp.desc())
     return entry_list('entries/index.html', entries)
 
 
@@ -47,16 +47,14 @@ def create():
 @entries.route('/<slug>/')
 def detail(slug):
     """Show the given entry."""
-    entry = Entry.query.filter(Entry.slug == slug).first_or_404()
-    # print(entry.tags.order_by(Tag.name.desc()).all())
-    # entry.tags = entry.tags.order_by(Tag.name.desc()).all()
+    entry = get_entry_or_404(slug)
     return render_template('entries/detail.html', entry=entry)
 
 
 @entries.route('/<slug>/edit/', methods=['GET', 'POST'])
 def edit(slug):
     """Show the form for editing an entry (GET) or save the edited entry(POST)."""
-    entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+    entry = get_entry_or_404(slug)
     if request.method == 'POST':
         # Fill a form model with data from page form.
         form = EntryForm(request.form, obj=entry)
@@ -75,7 +73,7 @@ def edit(slug):
 @entries.route('/<slug>/delete/', methods=['GET', 'POST'])
 def delete(slug):
     """Show the form for deleting an entry (GET) or delete the entry(POST)."""
-    entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+    entry = get_entry_or_404(slug)
     if request.method == 'POST':
         entry.status = Entry.STATUS_DELETED
         db.session.add(entry)
@@ -87,8 +85,16 @@ def delete(slug):
 
 def entry_list(template, query, **context):
     """Filter a given query by 'q' parameter and insert it into given template."""
+    valid_statuses = (Entry.STATUS_PUBLIC, Entry.STATUS_DRAFT)
+    query = query.filter(Entry.status.in_(valid_statuses))
     search = request.args.get('q')
     if search:
         query = query.filter(
             Entry.status == (Entry.body.contains(search)) | (Entry.title.contains(search)))
+
     return object_list(template, query, **context)
+
+
+def get_entry_or_404(slug):
+    valid_statuses = (Entry.STATUS_PUBLIC, Entry.STATUS_DRAFT)
+    return Entry.query.filter((Entry.slug == slug) & (Entry.status.in_(valid_statuses))).first_or_404()
