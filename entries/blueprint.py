@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, render_template, request, url_for
 from helpers import object_list
 from models import Entry, Tag
 from entries.forms import EntryForm
+from app import db
 
 entries = Blueprint('entries', __name__, template_folder='templates')
 
@@ -50,6 +51,25 @@ def detail(slug):
     # print(entry.tags.order_by(Tag.name.desc()).all())
     # entry.tags = entry.tags.order_by(Tag.name.desc()).all()
     return render_template('entries/detail.html', entry=entry)
+
+
+@entries.route('/<slug>/edit/', methods=['GET', 'POST'])
+def edit(slug):
+    """Show the form for editing an entry (GET) or save the edited entry(POST)."""
+    entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+    if request.method == 'POST':
+        # Fill a form model with data from page form.
+        form = EntryForm(request.form, obj=entry)
+        if form.validate():
+            # Save data from form model to database entry.
+            entry = form.save_entry(entry)
+            db.session.add(entry)
+            db.session.commit()
+            # Redirect to the edited entry detail view.
+            return redirect(url_for('entries.detail', slug=entry.slug))
+    else:
+        form = EntryForm(obj=entry)
+    return render_template('entries/edit.html', entry=entry, form=form)
 
 
 def entry_list(template, query, **context):
