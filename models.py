@@ -14,12 +14,13 @@ entry_tags = db.Table('entry_tags',
 
 
 class Entry(db.Model):
-    """Model of blog entry. It can be saved as a draft or published.
+    """Model of blog entry. It can be saved as a draft or published. After deleting it stays in the database.
     It does have a title, body, time of creation and publication.
     It can be tagged."""
 
     STATUS_PUBLIC = 0
     STATUS_DRAFT = 1
+    STATUS_DELETED = 2
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
