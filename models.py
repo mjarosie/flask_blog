@@ -50,7 +50,7 @@ class Tag(db.Model):
     name = db.Column(db.String(64))
     slug = db.Column(db.String(64), unique=True)
 
-    def __init(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(Tag, self).__init__(*args, **kwargs)
         self.slug = slugify(self.name)
 

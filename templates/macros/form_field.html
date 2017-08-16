@@ -6,6 +6,9 @@
             {% if field.errors %}
                 <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
             {% endif %}
+            {% if field.description %}
+                <span class="help-block"> {{ field.description|safe }} </span>
+            {% endif %}
             {% for error in field.errors %}
                 <span class="help-block">{{ error }}</span>
             {% endfor %}
