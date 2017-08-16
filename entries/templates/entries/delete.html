@@ -2,7 +2,7 @@
 
 {% block title %}{{ entry.title }} {% endblock %}
 
-{% block content_title %} {{ entry.title %} {% endblock %}
+{% block content_title %} {{ entry.title }} {% endblock %}
 
 {% block content %}
     <form action="{{ url_for('entries.delete', slug=entry.slug) }}" method="post">

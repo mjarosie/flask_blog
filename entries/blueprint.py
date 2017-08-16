@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from helpers import object_list
 from models import Entry, Tag
 from entries.forms import EntryForm
@@ -38,6 +38,7 @@ def create():
             entry = form.save_entry(Entry())
             db.session.add(entry)
             db.session.commit()
+            flash('Entry "{}" created successfully.'.format(entry.title), 'success')
             return redirect(url_for('entries.detail', slug=entry.slug))
     else:  # If GET request received.
         form = EntryForm()
@@ -63,6 +64,7 @@ def edit(slug):
             entry = form.save_entry(entry)
             db.session.add(entry)
             db.session.commit()
+            flash('Entry "{}" has been saved.'.format(entry.title), 'success')
             # Redirect to the edited entry detail view.
             return redirect(url_for('entries.detail', slug=entry.slug))
     else:
@@ -78,6 +80,7 @@ def delete(slug):
         entry.status = Entry.STATUS_DELETED
         db.session.add(entry)
         db.session.commit()
+        flash('Entry "{}" has been deleted.'.format(entry.title), 'success')
         return redirect(url_for('entries.index'))
 
     return render_template('entries/delete.html', entry=entry)
