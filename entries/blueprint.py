@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from helpers import object_list
-from models import Entry, Tag
+from models import Entry, Tag, entry_tags
 from entries.forms import EntryForm, ImageForm
 from app import app, db
 from werkzeug.utils import secure_filename
@@ -19,7 +19,7 @@ def index():
 @entries.route('/tags/')
 def tag_index():
     """List all tags."""
-    tags = Tag.query.order_by(Tag.name)
+    tags = Tag.query.join(entry_tags).distinct().order_by(Tag.name)
     return object_list('entries/tag_index.html', tags)
 
 
