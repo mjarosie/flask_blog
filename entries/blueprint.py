@@ -38,6 +38,9 @@ def image_upload():
         if form.validate():
             image_file = request.files['file']
             filename = os.path.join(app.config['IMAGES_DIR'], secure_filename(image_file.filename))
+            if filename.split('.')[-1] not in ('png', 'jpg', 'tiff', 'gif'):
+                flash('Error: "{}" does not have a supported format.'.format(os.path.basename(filename)), 'danger')
+                return redirect(url_for('entries.index'))
             image_file.save(filename)
             flash('Saved "{}"'.format(os.path.basename(filename)), 'success')
             return redirect(url_for('entries.index'))

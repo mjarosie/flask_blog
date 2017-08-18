@@ -51,6 +51,7 @@ class EntryForm(wtforms.Form):
         coerce=int
     )
     tags = TagField('Tags', description='Separate multiple tags with commas.')
+    slug = wtforms.StringField('User-friendly URL', render_kw={'readonly': True})
 
     def save_entry(self, entry):
         """Populates the given entry with the form data and re-generates the entry's slug based on the new title."""
