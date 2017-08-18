@@ -5,6 +5,7 @@ from models import Entry, Tag, entry_tags
 from entries.forms import EntryForm, ImageForm
 from app import app, db
 from werkzeug.utils import secure_filename
+from flask_login import login_required
 
 entries = Blueprint('entries', __name__, template_folder='templates')
 
@@ -32,6 +33,7 @@ def tag_detail(slug):
 
 
 @entries.route('/image-upload/', methods=['GET', 'POST'])
+@login_required
 def image_upload():
     if request.method == 'POST':
         form = ImageForm(request.form)
@@ -50,6 +52,7 @@ def image_upload():
 
 
 @entries.route('/create/', methods=['GET', 'POST'])
+@login_required
 def create():
     if request.method == 'POST':
         form = EntryForm(request.form)
@@ -73,6 +76,7 @@ def detail(slug):
 
 
 @entries.route('/<slug>/edit/', methods=['GET', 'POST'])
+@login_required
 def edit(slug):
     """Show the form for editing an entry (GET) or save the edited entry(POST)."""
     entry = get_entry_or_404(slug)
@@ -93,6 +97,7 @@ def edit(slug):
 
 
 @entries.route('/<slug>/delete/', methods=['GET', 'POST'])
+@login_required
 def delete(slug):
     """Show the form for deleting an entry (GET) or delete the entry(POST)."""
     entry = get_entry_or_404(slug)
