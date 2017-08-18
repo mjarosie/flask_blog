@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, g
 from helpers import object_list
 from models import Entry, Tag, entry_tags
 from entries.forms import EntryForm, ImageForm
@@ -58,7 +58,7 @@ def create():
         form = EntryForm(request.form)
         if form.validate():
             from app import db
-            entry = form.save_entry(Entry())
+            entry = form.save_entry(Entry(author=g.user))
             db.session.add(entry)
             db.session.commit()
             flash('Entry "{}" created successfully.'.format(entry.title), 'success')
