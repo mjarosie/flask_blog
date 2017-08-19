@@ -114,7 +114,6 @@ def delete(slug):
 def entry_list(template, query, **context):
     """Filter a given query by 'q' parameter and insert it into given template."""
     query = filter_status_by_user(query)
-    
     valid_statuses = (Entry.STATUS_PUBLIC, Entry.STATUS_DRAFT)
     query = query.filter(Entry.status.in_(valid_statuses))
     search = request.args.get('q')
