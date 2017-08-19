@@ -12,8 +12,11 @@ Attributes:
 <!-- List all the tags connected with the entry, sorted in alphabetical order. -->
 {% block sidebar %}
     <ul class="well nav nav-list">
-        <li><a href="{{ url_for('entries.edit', slug=entry.slug) }}">Edit</a></li>
-        <li><a href="{{ url_for('entries.delete', slug=entry.slug) }}">Delete</a></li>
+        {% if g.user == entry.author %}
+            <li><h4>Actions</h4></li>
+            <li><a href="{{ url_for('entries.edit', slug=entry.slug) }}">Edit</a></li>
+            <li><a href="{{ url_for('entries.delete', slug=entry.slug) }}">Delete</a></li>
+        {% endif %}
         <li><h4>Tags</h4></li>
         {% for tag in entry.tags|sort(attribute='name') %}
             <li><a href="{{ url_for('entries.tag_detail', slug=tag.slug) }}">{{ tag.name }}</a></li>

@@ -79,7 +79,7 @@ def detail(slug):
 @login_required
 def edit(slug):
     """Show the form for editing an entry (GET) or save the edited entry(POST)."""
-    entry = get_entry_or_404(slug)
+    entry = get_entry_or_404(slug, author=None)
     if request.method == 'POST':
         # Fill a form model with data from page form.
         form = EntryForm(request.form, obj=entry)
@@ -100,7 +100,7 @@ def edit(slug):
 @login_required
 def delete(slug):
     """Show the form for deleting an entry (GET) or delete the entry(POST)."""
-    entry = get_entry_or_404(slug)
+    entry = get_entry_or_404(slug, author=None)
     if request.method == 'POST':
         entry.status = Entry.STATUS_DELETED
         db.session.add(entry)
@@ -113,6 +113,8 @@ def delete(slug):
 
 def entry_list(template, query, **context):
     """Filter a given query by 'q' parameter and insert it into given template."""
+    query = filter_status_by_user(query)
+    
     valid_statuses = (Entry.STATUS_PUBLIC, Entry.STATUS_DRAFT)
     query = query.filter(Entry.status.in_(valid_statuses))
     search = request.args.get('q')
@@ -123,6 +125,23 @@ def entry_list(template, query, **context):
     return object_list(template, query, **context)
 
 
-def get_entry_or_404(slug):
-    valid_statuses = (Entry.STATUS_PUBLIC, Entry.STATUS_DRAFT)
-    return Entry.query.filter((Entry.slug == slug) & (Entry.status.in_(valid_statuses))).first_or_404()
+def get_entry_or_404(slug, author=None):
+    query = Entry.query.filter(Entry.slug == slug)
+    if author:
+        query = query.filter(Entry.author == author)
+    else:
+        query = filter_status_by_user(query)
+    return query.first_or_404()
+
+
+def filter_status_by_user(query):
+    """Return all the public entries, or the undeleted entries for which author is logged in."""
+    if not g.user.is_authenticated:
+        return query.filter(Entry.status == Entry.STATUS_PUBLIC)
+    else:
+        # Allow user to view their own drafts.
+        query = query.filter(
+            (Entry.status == Entry.STATUS_PUBLIC) |
+            ((Entry.author == g.user) &
+             (Entry.status != Entry.STATUS_DELETED)))
+    return query
