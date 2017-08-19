@@ -24,3 +24,4 @@ def _before_request():
     g.user = current_user
 
 bcrypt = Bcrypt(app)
+

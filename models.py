@@ -49,6 +49,14 @@ class Entry(db.Model):
     def __repr__(self):
         return '<Entry: {}>'.format(self.title)
 
+    @property
+    def tag_list(self):
+        return ', '.join(tag.name for tag in self.tags)
+
+    @property
+    def tease(self):
+        return self.body[:100]
+
 
 class Tag(db.Model):
     """Model of a tag with which the entries can be connected."""
