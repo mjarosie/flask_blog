@@ -1,12 +1,20 @@
-from flask_admin import Admin
+from flask_admin import Admin, AdminIndexView, expose
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from wtforms.fields import SelectField, PasswordField
+from flask import g, url_for, redirect, request
 
 from app import app, db
 from models import Entry, Tag, User
 
 
-class BaseModelView(ModelView):
+class AdminAuthentication(object):
+    def is_accessible(self):
+        return g.user.is_authenticated and g.user.is_admin()
+        # return True
+
+
+class BaseModelView(AdminAuthentication, ModelView):
     pass
 
 
@@ -43,12 +51,11 @@ class EntryModelView(SlugModelView):
 
 
 class UserModelView(SlugModelView):
-    column_list = ['email', 'name', 'active', 'created_timestamp']
+    column_filters = ('email', 'name', 'active')
+    column_list = ['email', 'name', 'active', 'admin', 'created_timestamp']
     column_searchable_list = ['email', 'name']
-    column_filters = ['email', 'active', 'created_timestamp']
-    form_extra_fields = {
-        'password': PasswordField('New password'),
-    }
+    form_columns = ['email', 'name', 'password', 'active', 'admin']
+    form_extra_fields = {'password': PasswordField('New password')}
 
     def on_model_change(self, form, model, is_created):
         if form.password.data:
@@ -56,7 +63,22 @@ class UserModelView(SlugModelView):
         return super(UserModelView, self).on_model_change(form, model, is_created)
 
 
-admin = Admin(app, name='Blog admin panel', template_mode='bootstrap3')
+class BlogFileAdmin(AdminAuthentication, FileAdmin):
+    pass
+
+
+class IndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        # If user is not an authenticated admin, redirect him to login page.
+        if not (g.user.is_authenticated and g.user.is_admin()):
+            return redirect(url_for('login', next=request.path))
+        # Otherwise, render the admin index page.
+        return self.render('admin/index.html')
+
+
+admin = Admin(app, name='Blog admin panel', template_mode='bootstrap3', index_view=IndexView())
 admin.add_view(EntryModelView(Entry, db.session))
 admin.add_view(SlugModelView(Tag, db.session))
 admin.add_view(UserModelView(User, db.session))
+admin.add_view(BlogFileAdmin(app.config['STATIC_DIR'], '/static/', name='Static Files'))
